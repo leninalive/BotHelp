@@ -1,0 +1,9 @@
+#!/bin/bash
+
+docker-compose build
+docker-compose run --rm worker composer install --no-dev --optimize-autoloader
+
+CPU_COUNT=$(grep "cpu family" /proc/cpuinfo|wc -l)
+
+docker-compose up -d --scale worker=${CPU_COUNT}
+docker-compose exec worker bin/console demo:enqueue
